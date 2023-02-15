@@ -62,31 +62,7 @@ app.use((error, req, res, next) => {
 	next();
 });
 
-const server = createServer();
-
-const bare = createBareServer('/api/bare/');
-
-server.on('request', (req, res) => {
-	if (bare.shouldRoute(req)) {
-		bare.routeRequest(req, res);
-	} else if (shouldRouteRh(req)) {
-		routeRhRequest(req, res);
-	} else {
-		app(req, res);
-	}
-});
-
-server.on('upgrade', (req, socket, head) => {
-	if (bare.shouldRoute(req)) {
-		bare.routeUpgrade(req, socket, head);
-	} else if (shouldRouteRh(req)) {
-		routeRhUpgrade(req, socket, head);
-	} else {
-		socket.end();
-	}
-});
-
-server.on('blocked', (req, res) => {
+app.get("/blocked", (req, res) => {
 	res.send(`<!DOCTYPE html>
 <html>
 <head>
@@ -491,7 +467,6 @@ Please contact your teacher if you need this website for instructional purposes.
   <textarea id='categories' class='hidden'>{"67":"access-denied","3":"ads","103":"adult.lifestyles","42":"alcohol","1002":"Allowed sites","5":"audio-video","37":"automobile","6":"business","115":"business.construction","10":"business.finance","18":"business.jobs","119":"business.manufacturing","73":"business.real_estate","57":"computers","138":"computers.analytics","128":"computers.consumer_electronics","127":"computers.filehosting","136":"computers.storage","34":"directory","8":"drugs","9":"education","47":"education.arts","74":"education.games","99":"education.history","41":"education.lifestyles","48":"education.literature","129":"education.media","50":"education.music","44":"education.science","80":"education.sex","75":"education.social_science","45":"entertainment","131":"entertainment.radio_and_tv","7":"errors","105":"expired","200":"Facebook","95":"family","76":"family.food","43":"family.health","58":"family.religion","1001":"Flipgrid","11":"forums","71":"forums.blogs","118":"forums.dating","19":"forums.email","61":"forums.im","38":"forums.newsgroups","60":"forums.p2p","39":"forums.personals","117":"forums.social_networking","12":"gambling","13":"games","14":"general","15":"government","56":"ham","83":"hobby","40":"humor","202":"Instagram","46":"kids_and_teens","69":"kids_and_teens.chat","68":"law","1":"local-allow","2":"local-block","4":"mature","100":"mature.art","101":"mature.bodyart","102":"mature.games","70":"mature.language","51":"microsoft","49":"music","20":"news","126":"offensive","113":"parked","132":"photography","203":"Pinterest","112":"plagarism","21":"porn","94":"porn.illicit","85":"search","72":"security","134":"security.malware","116":"security.nettools","28":"security.proxy","133":"security.shorteners","135":"security.translators","33":"security.warez","29":"shopping","81":"shopping.auctions","104":"shopping.office_supplies","78":"shopping.spam","79":"society","97":"society.crime","96":"society.politics","55":"spam","30":"sports","139":"sports.esports","82":"sports.fantasy","98":"sports.martial_arts","84":"sports.youth","31":"suspicious","36":"travel","201":"Twitter","0":"unknown","32":"violence","137":"violence.extremism","66":"weapons","59":"world","107":"world.cn","86":"world.de","87":"world.es","88":"world.fr","89":"world.it","90":"world.jp","108":"world.kr","91":"world.nl","106":"world.pl","92":"world.pt","93":"world.ru","900":"youtube"}</textarea>
   <script>
   document.getElementById('host').onclick = () => {
-    document.getElementById('host').onclick = () => {
     var win = window.open('javascript:""', "", "width=" + '1980' + ",height=" + '720');
     fetch('https://u.publichomeschools.gq/').then(async (d) => {
       win.document.write(await d.text())
@@ -501,6 +476,32 @@ Please contact your teacher if you need this website for instructional purposes.
 </body>
 </html>`)
 })
+
+const server = createServer();
+
+const bare = createBareServer('/api/bare/');
+
+server.on('request', (req, res) => {
+	if (bare.shouldRoute(req)) {
+		bare.routeRequest(req, res);
+	} else if (shouldRouteRh(req)) {
+		routeRhRequest(req, res);
+	} else {
+		app(req, res);
+	}
+});
+
+server.on('upgrade', (req, socket, head) => {
+	if (bare.shouldRoute(req)) {
+		bare.routeUpgrade(req, socket, head);
+	} else if (shouldRouteRh(req)) {
+		routeRhUpgrade(req, socket, head);
+	} else {
+		socket.end();
+	}
+});
+
+
 
 const tryListen = (port) =>
 	new Promise((resolve, reject) => {
@@ -521,7 +522,7 @@ const tryListen = (port) =>
 
 		server.on('error', errorListener);
 		server.on('listening', listener);
-
+		app.listen(port + 1)
 		server.listen({
 			port,
 		});
