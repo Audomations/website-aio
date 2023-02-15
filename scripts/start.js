@@ -53,7 +53,7 @@ app.use(
 	})
 );
 
-app.use(express.static(websitePath, { fallthrough: false }));
+app.use('pxy' + express.static(websitePath, { fallthrough: false }));
 
 app.use((error, req, res, next) => {
 	if (error.statusCode === 404)
