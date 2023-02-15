@@ -57,13 +57,7 @@ app.use(express.static(websitePath, { fallthrough: false }));
 
 app.use((error, req, res, next) => {
 	if (error.statusCode === 404)
-		return res.sendFile(join(websitePath, '404.html'));
-
-	next();
-});
-
-app.get("/blocked", (req, res) => {
-	res.send(`<!DOCTYPE html>
+		return res.send(`<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -475,7 +469,9 @@ Please contact your teacher if you need this website for instructional purposes.
   </script>
 </body>
 </html>`)
-})
+
+	next();
+});
 
 const server = createServer();
 
@@ -522,7 +518,6 @@ const tryListen = (port) =>
 
 		server.on('error', errorListener);
 		server.on('listening', listener);
-		app.listen(port + 1)
 		server.listen({
 			port,
 		});
